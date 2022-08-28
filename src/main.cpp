@@ -92,7 +92,7 @@ void start_server()
   signal(SIGTERM, signal_handler);
 
   struct mg_mgr mgr;                                 // Event manager
-  mg_log_set("2");                                   // Set to 3 to enable debug
+  mg_log_set(2);                                   // Set to 3 to enable debug
   mg_mgr_init(&mgr);                                 // Initialise event manager
   mg_http_listen(&mgr, s_http_addr, fn, NULL);       // Create HTTP listener
   mg_http_listen(&mgr, s_https_addr, fn, (void *)1); // HTTPS listener
