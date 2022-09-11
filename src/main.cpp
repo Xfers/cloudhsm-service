@@ -168,8 +168,13 @@ bool try_load_hsm() {
   }
 }
 
+#include "base64.h"
+
 int main(int argc, char *argv[])
 {
+  auto c = base64_decode(base64_encode((const uint8_t *)"hello", 5));
+  std::cout<<std::string(c.begin(), c.end());
+  return 0;
   if(try_load_hsm()) {
     std::cerr << "CloudHSM is enabled\n";
   } else {

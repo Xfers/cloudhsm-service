@@ -16,6 +16,8 @@ public:
     PKey(const PKey &rhs) = default;
 
     std::vector<uint8_t> sign(const uint8_t *data, size_t size) const;
+    // No digest
+    std::vector<uint8_t> pure_sign(const uint8_t *data, size_t size) const;
     std::string sign_base64(const uint8_t *data, size_t size) const;
     static PKey from_file(const std::string &filename);
 private:
