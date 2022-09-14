@@ -1,5 +1,5 @@
-name: Build Image
-on: [pull-request]
+name: Test
+on: [push]
 env:
   TEST_TAG: user/cloudhsm:test
 
@@ -15,6 +15,7 @@ jobs:
         with:
           load: true
           tags: ${{ env.TEST_TAG }}
+
       - name: Test
         run: |
           docker run --entrypoint "ctest" -w "/app/bin" --rm ${{ env.TEST_TAG }}
