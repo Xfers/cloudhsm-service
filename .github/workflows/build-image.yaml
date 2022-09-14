@@ -1,0 +1,11 @@
+name: Build Image
+on: [push]
+jobs:
+  Explore-GitHub-Actions:
+    runs-on: debian-buster
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build
+        uses: docker/build-push-action@v3
