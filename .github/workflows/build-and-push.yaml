@@ -3,8 +3,9 @@ on:
   push:
     branches:
       - 'master'
+
 env:
-  TEST_TAG: tim37021/hsm-service:latest
+  REPO_TAG: tim37021/hsm-service:latest
 
 jobs:
   Build:
@@ -17,7 +18,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           load: true
-          tags: ${{ env.TEST_TAG }}
+          tags: ${{ env.REPO_TAG }}
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
@@ -27,11 +28,11 @@ jobs:
 
       - name: Test
         run: |
-          docker run --entrypoint "ctest" -w "/app/bin" --rm ${{ env.TEST_TAG }}
+          docker run --entrypoint "ctest" -w "/app/bin" --rm ${{ env.REPO_TAG }}
 
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
-          tags: ${{ env.TEST_TAG }}
+          tags: ${{ env.REPO_TAG }}
