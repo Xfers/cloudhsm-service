@@ -8,7 +8,7 @@ RUN curl -LO -s https://github.com/Kitware/CMake/releases/download/v3.24.2/cmake
   && ./cmake-3.24.2-linux-x86_64.sh --skip-license \
   && rm cmake-3.24.2-linux-x86_64.sh 
 
-RUN curl -L -s https://github.com/mikefarah/yq/releases/download/v4.2.0/yq_linux_amd64 -o /usr/bin/yq \
+RUN curl -L -s https://github.com/mikefarah/yq/releases/download/v4.27.5/yq_linux_amd64 -o /usr/bin/yq \
   && chmod +x /usr/bin/yq
 
 RUN cd /tmp \
