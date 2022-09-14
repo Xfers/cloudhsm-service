@@ -17,6 +17,7 @@ std::string base64_encode(const uint8_t *data, size_t size)
     BIO_flush(bio);
     BIO_get_mem_ptr(bio, &bufferPtr);
     std::string ret(bufferPtr->data, bufferPtr->length);
+    BIO_free_all(b64);
 
     return ret;
 }
