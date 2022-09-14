@@ -1,5 +1,5 @@
 name: Build Image
-on: [push]
+on: [pull-request]
 env:
   TEST_TAG: user/cloudhsm:test
 
