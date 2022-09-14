@@ -1,9 +1,18 @@
 FROM debian:buster
 RUN apt update && \
-    apt install -y libssl-dev cmake build-essential curl
+    apt install -y libssl-dev build-essential curl git
+
+# Install cmake
+RUN curl -LO -s https://github.com/Kitware/CMake/releases/download/v3.24.2/cmake-3.24.2-linux-x86_64.sh \
+  && chmod +x cmake-3.24.2-linux-x86_64.sh \
+  && ./cmake-3.24.2-linux-x86_64.sh --skip-license \
+  && rm cmake-3.24.2-linux-x86_64.sh 
+
+RUN curl -L -s https://github.com/mikefarah/yq/releases/download/v4.27.5/yq_linux_amd64 -o /usr/bin/yq \
+  && chmod +x /usr/bin/yq
 
 RUN cd /tmp \
-  && curl https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/Bionic/cloudhsm-dyn_latest_u18.04_amd64.deb --output ./cloudhsm-dyn_latest_u18.04_amd64.deb \
+  && curl -LO -s https://s3.amazonaws.com/cloudhsmv2-software/CloudHsmClient/Bionic/cloudhsm-dyn_latest_u18.04_amd64.deb \
   && apt install -y ./cloudhsm-dyn_latest_u18.04_amd64.deb \
   && rm ./cloudhsm-dyn_latest_u18.04_amd64.deb
 

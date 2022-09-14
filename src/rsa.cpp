@@ -12,6 +12,11 @@ PKey::PKey(const std::string &pem)
     EVP_PKEY_assign_RSA(m_privKey, m_priv);
 }
 
+PKey::~PKey()
+{
+    dispose();
+}
+
 RSA *PKey::create_private_rsa(const std::string &pem)
 {
     RSA *rsa = NULL;
@@ -22,6 +27,7 @@ RSA *PKey::create_private_rsa(const std::string &pem)
         return 0;
     }
     rsa = PEM_read_bio_RSAPrivateKey(keybio, &rsa, NULL, NULL);
+    BIO_free(keybio);
     return rsa;
 }
 
@@ -45,10 +51,10 @@ std::vector<uint8_t> PKey::sign(const uint8_t *data, size_t size) const
 std::vector<uint8_t> PKey::pure_sign(const uint8_t *data, size_t size) const
 {
     EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(m_privKey, nullptr);
-    if(!ctx)
+    if (!ctx)
         throw std::runtime_error("EVP_PKEY_CTX_new");
 
-    if(EVP_PKEY_sign_init(ctx) <= 0)
+    if (EVP_PKEY_sign_init(ctx) <= 0)
         throw std::runtime_error("EVP_PKEY_sign_init");
     if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) <= 0)
         throw std::runtime_error("EVP_PKEY_CTX_set_rsa_padding");
@@ -65,28 +71,35 @@ std::vector<uint8_t> PKey::pure_sign(const uint8_t *data, size_t size) const
     return enc;
 }
 
-
-
-std::string PKey::sign_base64(const uint8_t *data, size_t size) const
-{
-    auto enc = sign(data, size);
-    return base64_encode(enc.data(), enc.size());
-}
-
 void PKey::dispose()
 {
     EVP_PKEY_free(m_privKey);
 }
 
+#include <fstream>
+static std::string read_file(const std::string &filename)
+{
+    std::ifstream t(filename);
+    return std::string((std::istreambuf_iterator<char>(t)),
+                       std::istreambuf_iterator<char>());
+}
+
+PKey PKey::from_file(const std::string &filename)
+{
+    return PKey(read_file(filename));
+}
+
 KeyManager::~KeyManager()
 {
-    for (auto c : m_map)
-    {
-        c.second->dispose();
-    }
+    dispose();
 }
 
 void KeyManager::add_key(std::string key, const std::string &pem)
 {
-    m_map[key] = new PKey(pem);
+    m_map[key] = std::make_shared<PKey>(pem);
+}
+
+void KeyManager::dispose()
+{
+    m_map.clear();
 }
