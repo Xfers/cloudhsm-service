@@ -1,5 +1,5 @@
 SCRIPT_PATH=`dirname $0`
-HSM_SERVICE=${SCRIPT_PATH}/../build/hsm-service
+HSM_SERVICE=`find ${SCRIPT_PATH}/.. -name 'hsm-service' -type f -executable`
 KEY_PATH=${SCRIPT_PATH}/private-key.pem
 
 
