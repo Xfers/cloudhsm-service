@@ -1,7 +1,10 @@
 name: Build Image
 on: [push]
+env:
+  TEST_TAG: user/cloudhsm:test
+
 jobs:
-  Build:
+  Build and Test:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Docker Buildx
@@ -9,3 +12,10 @@ jobs:
 
       - name: Build
         uses: docker/build-push-action@v3
+        with:
+          context: .
+          load: true
+          tags: ${{ env.TEST_TAG }}
+      - name: Test
+        run: |
+          docker run --entrypoint "ctest" -w "/app/bin" --rm ${{ env.TEST_TAG }}
