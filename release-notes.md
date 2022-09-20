@@ -1,5 +1,8 @@
 Release Notes
 ====
+v1.0.4
+Handle Bad Request
+
 v1.0.3
 For bump version
 
