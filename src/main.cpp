@@ -67,7 +67,6 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
                 mg_http_reply(c, 404, "Content-Type: application/json\r\n", "{message:\"Key not found\"}");
             else
             {
-
                 std::string_view body(hm->body.ptr, hm->body.len);
                 std::vector<uint8_t> input(body.cbegin(), body.cend());
                 auto result = key->sign(input.data(), input.size());
@@ -83,12 +82,15 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
                 mg_http_reply(c, 404, "Content-Type: application/json\r\n", "{message:\"Key not found\"}");
             else
             {
-                // TODO: Prevent bad request
-                std::string body(hm->body.ptr, hm->body.len);
-                auto input_decoded = base64_decode(body);
-                auto result = key->pure_sign(input_decoded.data(), input_decoded.size());
-                std::string base64_result = base64_encode(result.data(), result.size());
-                mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"result\": \"%s\"}\n", base64_result.c_str());
+                try {
+                    std::string body(hm->body.ptr, hm->body.len);
+                    auto input_decoded = base64_decode(body);
+                    auto result = key->pure_sign(input_decoded.data(), input_decoded.size());
+                    std::string base64_result = base64_encode(result.data(), result.size());
+                    mg_http_reply(c, 200, "Content-Type: application/json\r\n", "{\"result\": \"%s\"}\n", base64_result.c_str());
+                } catch(const std::runtime_error &e) {
+                    mg_http_reply(c, 400, "Content-Type: application/json\r\n", "{ \"result\": \"Bad request\" }\n");
+                }
             }
         }
         else if (mg_http_match_uri(hm, "/liveness"))

@@ -24,4 +24,8 @@ if [ ! $? == 0 ]; then
 fi
 echo " [PASS]"
 
+echo -n "Bad Request Test"
+RESULT=`curl -X POST http://localhost:8000/api/pure-sign/k1 -s -d "hello" | yq .result`
+echo " [PASS]"
+sleep 0.5
 kill -SIGINT $PID
