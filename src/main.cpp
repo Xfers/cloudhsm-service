@@ -68,7 +68,6 @@ static void fn(struct mg_connection *c, int ev, void *ev_data, void *fn_data)
             else
             {
                 try {
-                    std::string body(hm->body.ptr, hm->body.len);
                     std::string_view body(hm->body.ptr, hm->body.len);
                     std::vector<uint8_t> input(body.cbegin(), body.cend());
                     auto result = key->sign(input.data(), input.size());
