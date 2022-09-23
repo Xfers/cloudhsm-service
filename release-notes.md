@@ -1,5 +1,8 @@
 Release Notes
 ====
+v1.0.5
+Bad Request -> Server Internal Error
+
 v1.0.4
 Handle Bad Request
 
