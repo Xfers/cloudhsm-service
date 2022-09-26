@@ -1,9 +1,10 @@
 SCRIPT_PATH=`dirname $0`
 HSM_SERVICE=`find ${SCRIPT_PATH}/.. -name 'hsm-service' -type f -executable`
 KEY_PATH=${SCRIPT_PATH}/private-key.pem
+KEY2_PATH=${SCRIPT_PATH}/private-key2.pem
 
 
-${HSM_SERVICE} server -m k1:${KEY_PATH} 2>/dev/null &
+${HSM_SERVICE} server -m k1:${KEY_PATH} -m k2:${KEY2_PATH} 2>/dev/null &
 PID=$!
 echo "Server is running with pid ${PID}"
 

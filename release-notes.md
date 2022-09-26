@@ -2,6 +2,8 @@ Release Notes
 ====
 v1.0.5
 Bad Request -> Server Internal Error
+Fix memory leak when `pure-sign` throws exceptions
+Update readme
 
 v1.0.4
 Handle Bad Request

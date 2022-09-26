@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <string_view>
 #include <iostream>
+#include <memory>
 #include "base64.h"
 
 PKey::PKey(const std::string &pem)
@@ -50,24 +51,25 @@ std::vector<uint8_t> PKey::sign(const uint8_t *data, size_t size) const
 
 std::vector<uint8_t> PKey::pure_sign(const uint8_t *data, size_t size) const
 {
-    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new(m_privKey, nullptr);
+    std::shared_ptr<EVP_PKEY_CTX> ctx(EVP_PKEY_CTX_new(m_privKey, nullptr),
+        [] (EVP_PKEY_CTX *ctx) { EVP_PKEY_CTX_free(ctx); });
+
     if (!ctx)
         throw std::runtime_error("EVP_PKEY_CTX_new");
 
-    if (EVP_PKEY_sign_init(ctx) <= 0)
+    if (EVP_PKEY_sign_init(ctx.get()) <= 0)
         throw std::runtime_error("EVP_PKEY_sign_init");
-    if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) <= 0)
+    if (EVP_PKEY_CTX_set_rsa_padding(ctx.get(), RSA_PKCS1_PADDING) <= 0)
         throw std::runtime_error("EVP_PKEY_CTX_set_rsa_padding");
-    if (EVP_PKEY_CTX_set_signature_md(ctx, EVP_sha256()) <= 0)
+    if (EVP_PKEY_CTX_set_signature_md(ctx.get(), EVP_sha256()) <= 0)
         throw std::runtime_error("EVP_PKEY_CTX_set_signature_md");
     size_t msg_len_enc = 0;
-    if (EVP_PKEY_sign(ctx, NULL, &msg_len_enc, data, size) <= 0)
+    if (EVP_PKEY_sign(ctx.get(), NULL, &msg_len_enc, data, size) <= 0)
         throw std::runtime_error("EVP_PKEY_sign calc length");
 
     std::vector<uint8_t> enc(msg_len_enc);
-    if (EVP_PKEY_sign(ctx, enc.data(), &msg_len_enc, data, size) <= 0)
+    if (EVP_PKEY_sign(ctx.get(), enc.data(), &msg_len_enc, data, size) <= 0)
         throw std::runtime_error("EVP_PKEY_sign calc length");
-    EVP_PKEY_CTX_free(ctx);
     return enc;
 }
 
